@@ -11,6 +11,7 @@ import morning.cat.TaskEvent;
 import morning.cat.TaskEventFactory;
 import morning.cat.handle.CleanTaskEventHandle;
 import morning.cat.handle.TaskEventHandle;
+import morning.cat.handle.TaskEventHandleTwo;
 import morning.cat.producer.TaskEventProducer;
 import morning.cat.producer.TaskEventProducerWithTranslator;
 import morning.cat.utils.DisruptorUtil;
@@ -39,8 +40,8 @@ public class TaskMain {
         // BusySpinWaitStrategy -> BusySpinWaitStrategy是性能最高的等待策略，但对部署环境施加了最高限制。仅当事件处理程序线程的数量小于框中的物理核心数时，才应使用此等待策略。例如。应禁用超线程。
 
         // Connect the handler
-        disruptor.handleEventsWith(new TaskEventHandle())
-                // .then(new CleanTaskEventHandle()) // 从环形缓冲区清除对象
+        disruptor.handleEventsWith(new TaskEventHandle(), new TaskEventHandleTwo(), (event, sequence, endOfBatch) -> System.out.println(event.getTaskId() + " lambda--> " + event))
+        // .then(new CleanTaskEventHandle()) // 从环形缓冲区清除对象
         ;
 
         // Start the Disruptor, starts all threads running
@@ -57,20 +58,23 @@ public class TaskMain {
         TaskEventProducer producer = new TaskEventProducer(ringBuffer);
         TaskEventProducerWithTranslator translator = new TaskEventProducerWithTranslator(ringBuffer);
 
-        for (long l = 0; true; l++) {
+//        for (long l = 0; true; l++) {
+        for (long l = 0; l < 3L; l++) {
             Task task = new Task();
             task.setTaskId(System.currentTimeMillis());
             task.setTaskName(Thread.currentThread().getName() + task.getTaskId());
             task.setTaskContent("Hello World,this is disruptor");
             producer.onData(task);
 
-            Thread.sleep(100);
+            Thread.sleep(1000);
 
-            Task task2 = new Task();
-            task2.setTaskId(System.currentTimeMillis());
-            task2.setTaskName(Thread.currentThread().getName() + task.getTaskId());
-            task2.setTaskContent("Hello World,this is task2");
-            translator.onData(task2);
+//            Task task2 = new Task();
+//            task2.setTaskId(System.currentTimeMillis());
+//            task2.setTaskName(Thread.currentThread().getName() + task.getTaskId());
+//            task2.setTaskContent("Hello World,this is task2");
+//            translator.onData(task2);
+//
+//            Thread.sleep(1000);
         }
     }
 }

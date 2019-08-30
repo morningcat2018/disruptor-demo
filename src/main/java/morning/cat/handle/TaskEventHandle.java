@@ -5,7 +5,7 @@ import com.lmax.disruptor.EventHandler;
 import morning.cat.TaskEvent;
 
 /**
- * 事件处理器（消费者）
+ * 事件处理器（绑定在消费者上）
  */
 public class TaskEventHandle implements EventHandler<TaskEvent> {
 
@@ -19,6 +19,6 @@ public class TaskEventHandle implements EventHandler<TaskEvent> {
      */
     @Override
     public void onEvent(TaskEvent event, long sequence, boolean endOfBatch) throws Exception {
-        System.out.println("业务处理: " + event);
+        System.out.println(event.getTaskId() + " 业务处理: " + event);
     }
 }

@@ -11,6 +11,10 @@ public class TaskEvent {
         this.value = task;
     }
 
+    public Long getTaskId() {
+        return this.value.getTaskId();
+    }
+
     public void clear() {
         value = null;
     }
